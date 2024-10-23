@@ -5,7 +5,7 @@ from pynput import mouse
 import sys  # 导入 sys 模块以便退出程序
 
 # 可调的长按阈值（秒）
-LONG_PRESS_THRESHOLD = 0.15
+LONG_PRESS_THRESHOLD = 0.18
 
 # 全局变量
 space_pressed_time = None  # 记录按下空格键的时间
@@ -82,7 +82,7 @@ def main():
     keyboard.on_release_key('space', on_space_up, suppress=True)
 
     # 注册 Ctrl+Esc 快捷键以退出脚本
-    keyboard.add_hotkey('ctrl+esc', exit_script)
+    keyboard.add_hotkey('space+esc', exit_script)
 
     # 让主线程保持运行
     keyboard.wait()
