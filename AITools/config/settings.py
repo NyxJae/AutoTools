@@ -6,7 +6,7 @@ import os
 # OpenAI API配置
 API_KEY = "sk-JnjCG9WAhWqXqJLwX4PwZhXLmOZgYluOQnzQBvXOWXpmYE2R"
 BASE_URL = "https://ai98.vip/v1"
-MODEL_NAME = "claude-3-5-sonnet-20241022"
+MODEL_NAME = "gpt-4o-2024-08-06"
 
 # 项目路径配置
 PROJECT_ROOT = "d:/Personal/Documents/AutoTools"

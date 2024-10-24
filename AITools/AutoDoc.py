@@ -2,7 +2,7 @@
 自动文档生成工具主入口
 集成配置和核心处理模块，提供简单的接口
 """
-from .OpenAIConnector import OpenAIConnection
+from .core.OpenAIConnector import OpenAIConnection
 from .config import settings, prompts
 from .core.processor import DocProcessor
 

@@ -3,9 +3,9 @@
 包含文件和文件夹的文档生成处理
 """
 import os
-from ..OpenAIConnector import OpenAIConnection
+from .OpenAIConnector import OpenAIConnection
 from .logger import Logger, Timer
-from ..FilePathUtils import FilePathUtils
+from .FilePathUtils import FilePathUtils
 from ..config.filters import EXCLUDE_DIRS, EXCLUDE_EXTENSIONS
 
 class DocProcessor:
@@ -80,6 +80,7 @@ class DocProcessor:
         # 生成文档路径
         rel_path = os.path.relpath(file_path, self.project_root)
         doc_name = f"Doc_{os.path.basename(file_path).replace('.', '_')}.md"
+        # 保持文档在对应的文件夹内
         doc_path = os.path.join(self.doc_root, os.path.dirname(rel_path), doc_name)
 
         self.logger.info(f"[读取文件] {file_path}")
@@ -124,7 +125,8 @@ class DocProcessor:
         # 生成文档路径
         rel_path = os.path.relpath(folder_path, self.project_root)
         doc_name = f"Doc_module_{os.path.basename(folder_path)}.md"
-        doc_path = os.path.join(self.doc_root, rel_path, doc_name)
+        # 保持模块文档生成在文件夹旁边
+        doc_path = os.path.join(self.doc_root, os.path.dirname(rel_path), doc_name)
 
         self.logger.info(f"[处理文件夹] {folder_path}")
         
@@ -133,19 +135,21 @@ class DocProcessor:
 
         # 收集文件夹内所有文档内容
         docs_content = []
+        # 从文件夹内收集文档
         doc_folder_path = os.path.join(self.doc_root, rel_path)
         if os.path.exists(doc_folder_path):
             self.logger.info("[收集文档] 正在收集文件夹内的现有文档...")
-            for file in os.listdir(doc_folder_path):
-                if file.startswith("Doc_") and file != doc_name:
-                    try:
-                        file_path = os.path.join(doc_folder_path, file)
-                        with open(file_path, 'r', encoding='utf-8') as f:
-                            content = f.read()
-                        docs_content.append(content)
-                        self.logger.success(f"成功读取文档: {file}")
-                    except Exception as e:
-                        self.logger.error(f"读取文档失败 {file}: {str(e)}")
+            for root, _, files in os.walk(doc_folder_path):
+                for file in files:
+                    if file.startswith("Doc_") and file != os.path.basename(doc_path):
+                        try:
+                            file_path = os.path.join(root, file)
+                            with open(file_path, 'r', encoding='utf-8') as f:
+                                content = f.read()
+                            docs_content.append(content)
+                            self.logger.success(f"成功读取文档: {file}")
+                        except Exception as e:
+                            self.logger.error(f"读取文档失败 {file}: {str(e)}")
 
         # 检查是否存在现有模块文档
         existing_doc = ""
