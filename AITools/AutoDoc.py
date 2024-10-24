@@ -1,11 +1,51 @@
+"""
+自动文档生成工具主入口
+集成配置和核心处理模块，提供简单的接口
+"""
 from .OpenAIConnector import OpenAIConnection
+from .config import settings, prompts
+from .core.processor import DocProcessor
 
-# 初始化并测试
-apikey = "sk-5WVwOmZqjuuhXiQZ5d4c8c1e1dB24fF4B59630C66fB91cFe"
-base_url = "https://35fast.aigcbest.top/v1"
-model_name = "gpt-4o-2024-08-06"
 
-openai_connection = OpenAIConnection(apikey, base_url, model_name)
-reply = openai_connection.test_function()
+class AutoDoc:
+    def __init__(self, api_key=None):
+        """
+        初始化自动文档生成器
+        :param api_key: OpenAI API密钥，如果不提供则使用settings中的默认值
+        """
+        # 使用提供的API密钥或默认值
+        self.api_key = api_key or settings.API_KEY
+        
+        # 初始化OpenAI连接
+        self.openai = OpenAIConnection(
+            self.api_key,
+            settings.BASE_URL,
+            settings.MODEL_NAME
+        )
+        
+        # 初始化文档处理器
+        self.processor = DocProcessor(
+            self.openai,
+            settings.DOC_ROOT,
+            settings.PROJECT_ROOT,
+            prompts.CODE_PROMPT,
+            prompts.MODULE_PROMPT
+        )
 
-print("回复内容:", reply)
+    def generate_docs(self, paths):
+        """
+        生成文档
+        :param paths: 需要生成文档的路径列表
+        """
+        self.processor.generate_docs(paths)
+
+
+if __name__ == "__main__":
+    # 使用示例
+    auto_doc = AutoDoc()
+    
+    # 指定要处理的路径列表
+    paths_to_process = ["AITools"]
+    
+    # 生成文档
+    auto_doc.generate_docs(paths_to_process)
